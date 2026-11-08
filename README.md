@@ -75,6 +75,8 @@ Detailed test instructions and verification results will be documented as implem
 
 AI development tools are used to support planning, implementation and testing. Technical decisions, generated changes and test results are reviewed and verified as part of the development process.
 
+The repository includes an `AGENTS.md` file containing persistent guidelines for AI coding agents. It defines coding standards, naming conventions, development workflow, testing practices and Git commit conventions to maintain consistency throughout development.
+
 ## Time Spent
 
 | Task           | Time Spent |
