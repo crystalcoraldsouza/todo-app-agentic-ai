@@ -6,6 +6,7 @@ import {
   deleteTodo as deleteTodoRequest,
   getTodos,
   updateTodo as updateTodoRequest,
+  TodoApiError,
   type Todo,
   type TodoInput,
 } from './todoService.js';
@@ -28,12 +29,14 @@ function App() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const [formError, setFormError] = useState('');
+  const [formErrorField, setFormErrorField] = useState<keyof TodoFormValues | null>(null);
   const [actionError, setActionError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [loadAttempt, setLoadAttempt] = useState(0);
+  const [minimumDueDateTime, setMinimumDueDateTime] = useState(getMinimumDueDateTime);
 
   const completedCount = todos.filter((todo) => todo.isCompleted).length;
 
@@ -61,30 +64,53 @@ function App() {
     return () => controller.abort();
   }, [loadAttempt]);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setMinimumDueDateTime(getMinimumDueDateTime());
+    }, 10_000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   function resetForm(): void {
     setFormValues(EMPTY_FORM);
     setEditingId(null);
     setFormError('');
+    setFormErrorField(null);
+  }
+
+  function refreshAfterNotFound(error: unknown): void {
+    if (error instanceof TodoApiError && error.code === 'TODO_NOT_FOUND') {
+      setLoadAttempt((attempt) => attempt + 1);
+    }
   }
 
   function handleFormChange(field: keyof TodoFormValues, value: string): void {
+    if (field === 'dueDateTime' && value && isPastDueDateTime(value)) {
+      setFormValues((currentValues) => ({ ...currentValues }));
+      setFormError('Please choose a future due date and time.');
+      setFormErrorField('dueDateTime');
+      return;
+    }
+
     setFormValues((currentValues) => ({ ...currentValues, [field]: value }));
+
+    if (field === 'title' && value.trim().length === 0) {
+      setFormError('Please enter a title for your ToDo.');
+      setFormErrorField('title');
+      return;
+    }
+
+    if (formErrorField === field || formErrorField === null) {
+      setFormError('');
+      setFormErrorField(null);
+    }
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setActionError('');
     setStatusMessage('');
-
-    if (formValues.title.trim().length === 0) {
-      setFormError('Please enter a title for your ToDo.');
-      return;
-    }
-
-    if (formValues.dueDateTime && isPastDueDateTime(formValues.dueDateTime)) {
-      setFormError('Please choose a future due date and time.');
-      return;
-    }
 
     const todoInput: TodoInput = {
       title: formValues.title,
@@ -112,7 +138,9 @@ function App() {
 
       resetForm();
     } catch (error) {
+      refreshAfterNotFound(error);
       setFormError(getErrorMessage(error));
+      setFormErrorField(null);
     } finally {
       setIsSaving(false);
     }
@@ -126,6 +154,7 @@ function App() {
     });
     setEditingId(todo.id);
     setFormError('');
+    setFormErrorField(null);
     setStatusMessage('Editing ToDo.');
     document.getElementById('todo-title')?.focus();
   }
@@ -145,6 +174,7 @@ function App() {
       ));
       setStatusMessage(updatedTodo.isCompleted ? 'ToDo completed.' : 'ToDo reopened.');
     } catch (error) {
+      refreshAfterNotFound(error);
       setActionError(getErrorMessage(error));
     } finally {
       setIsSaving(false);
@@ -170,7 +200,8 @@ function App() {
 
       setStatusMessage('ToDo deleted.');
     } catch (error) {
-      setActionError(getErrorMessage(error));
+      refreshAfterNotFound(error);
+      window.alert(getErrorMessage(error));
     } finally {
       setIsSaving(false);
     }
@@ -202,9 +233,12 @@ function App() {
       <TodoForm
         values={formValues}
         error={formError}
+        errorField={formErrorField}
         isEditing={editingId !== null}
         isSaving={isSaving}
-        minimumDueDateTime={getMinimumDueDateTime()}
+        isValid={formValues.title.trim().length > 0 &&
+          (!formValues.dueDateTime || !isPastDueDateTime(formValues.dueDateTime))}
+        minimumDueDateTime={minimumDueDateTime}
         onChange={handleFormChange}
         onSubmit={handleSubmit}
         onCancel={resetForm}

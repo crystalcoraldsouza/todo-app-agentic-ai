@@ -59,7 +59,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: #315f9f; }
 .todo-card { align-items: flex-start; padding: 14px; border: 1px solid #e1e6eb; border-radius: 7px; }
 .todo-main { display: flex; min-width: 0; gap: 10px; }
 .todo-copy { min-width: 0; }
-.todo-copy h3 { margin: 0 0 5px; overflow-wrap: anywhere; font-size: 1rem; }
+.todo-copy h3 { margin: 0 0 5px; overflow-wrap: anywhere; white-space: pre-wrap; font-size: 1rem; }
 .todo-copy p { margin: 0 0 6px; color: #52606e; overflow-wrap: anywhere; white-space: pre-wrap; }
 .todo-copy .due-date { margin-top: 8px; font-size: 0.9rem; }
 .is-completed .todo-copy h3 { color: #647181; text-decoration: line-through; }
@@ -88,6 +88,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: #315f9f; }
 .form-error { color: #a23232; font-weight: 600; }
 .primary-button { background: #315f9f; color: #fff; }
 .primary-button:hover { background: #264e86; }
+.primary-button:disabled { cursor: not-allowed; opacity: 0.55; }
 .secondary-button { border-color: #c7d0da; background: #fff; }
 
 .visually-hidden {

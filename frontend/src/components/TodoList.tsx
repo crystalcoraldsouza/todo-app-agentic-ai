@@ -73,7 +73,10 @@ function TodoList({
         </p>
       ) : (
         <ul className="todo-list">
-          {visibleTodos.map((todo) => (
+          {visibleTodos.map((todo) => {
+            const displayTitle = todo.title;
+
+            return (
             <li className={`todo-card${todo.isCompleted ? ' is-completed' : ''}`} key={todo.id}>
               <div className="todo-main">
                 <label className="completion-control">
@@ -84,23 +87,23 @@ function TodoList({
                     onChange={() => onToggleCompleted(todo)}
                   />
                   <span className="visually-hidden">
-                    Mark “{todo.title}” as {todo.isCompleted ? 'incomplete' : 'complete'}
+                    Mark “{displayTitle}” as {todo.isCompleted ? 'incomplete' : 'complete'}
                   </span>
                 </label>
                 <div className="todo-copy">
-                  <h3>{todo.title}</h3>
+                  <h3>{displayTitle}</h3>
                   {todo.description && <p>{todo.description}</p>}
                   {todo.dueDateTime && (
                     <p className="due-date">Due {formatDueDate(todo.dueDateTime)}</p>
                   )}
                 </div>
               </div>
-              <div className="todo-actions" role="group" aria-label={`Actions for ${todo.title}`}>
+              <div className="todo-actions" role="group" aria-label={`Actions for ${displayTitle}`}>
                 <button
                   className="text-button"
                   type="button"
                   disabled={isSaving}
-                  aria-label={`Edit ${todo.title}`}
+                  aria-label={`Edit ${displayTitle}`}
                   onClick={() => onEdit(todo)}
                 >
                   Edit
@@ -109,14 +112,15 @@ function TodoList({
                   className="text-button delete-button"
                   type="button"
                   disabled={isSaving}
-                  aria-label={`Delete ${todo.title}`}
+                  aria-label={`Delete ${displayTitle}`}
                   onClick={() => onDelete(todo)}
                 >
                   Delete
                 </button>
               </div>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </section>

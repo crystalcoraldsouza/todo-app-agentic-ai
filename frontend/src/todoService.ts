@@ -17,6 +17,17 @@ export interface TodoInput {
 
 export type TodoUpdate = Partial<TodoInput> & { isCompleted?: boolean };
 
+export class TodoApiError extends Error {
+  constructor(
+    message: string,
+    readonly statusCode: number,
+    readonly code: string,
+  ) {
+    super(message);
+    this.name = 'TodoApiError';
+  }
+}
+
 const NETWORK_ERROR = 'Could not connect to the server. Check that the backend is running and try again.';
 const INVALID_RESPONSE_ERROR = 'The server returned an unexpected response. Please try again.';
 
@@ -36,18 +47,27 @@ function isTodo(value: unknown): value is Todo {
     typeof value.updatedAt === 'string';
 }
 
-async function getApiError(response: Response): Promise<string> {
+async function getApiError(response: Response): Promise<TodoApiError> {
   try {
     const body: unknown = await response.json();
 
-    if (isRecord(body) && isRecord(body.error) && typeof body.error.message === 'string') {
-      return body.error.message;
+    if (isRecord(body) && isRecord(body.error)) {
+      const message = typeof body.error.message === 'string'
+        ? body.error.message
+        : `The request could not be completed (HTTP ${response.status}).`;
+      const code = typeof body.error.code === 'string' ? body.error.code : 'HTTP_ERROR';
+
+      return new TodoApiError(message, response.status, code);
     }
   } catch {
     // Use a generic message when the server response is not JSON.
   }
 
-  return `The request could not be completed (HTTP ${response.status}).`;
+  return new TodoApiError(
+    `The request could not be completed (HTTP ${response.status}).`,
+    response.status,
+    'HTTP_ERROR',
+  );
 }
 
 async function sendRequest(path: string, options?: RequestInit): Promise<Response> {
@@ -64,7 +84,7 @@ async function sendRequest(path: string, options?: RequestInit): Promise<Respons
 
 async function readTodo(response: Response): Promise<Todo> {
   if (!response.ok) {
-    throw new Error(await getApiError(response));
+    throw await getApiError(response);
   }
 
   let body: unknown;
@@ -86,7 +106,7 @@ export async function getTodos(signal?: AbortSignal): Promise<Todo[]> {
   const response = await sendRequest('/api/todos', { signal });
 
   if (!response.ok) {
-    throw new Error(await getApiError(response));
+    throw await getApiError(response);
   }
 
   let body: unknown;
@@ -128,6 +148,6 @@ export async function deleteTodo(id: string): Promise<void> {
   const response = await sendRequest(`/api/todos/${id}`, { method: 'DELETE' });
 
   if (!response.ok) {
-    throw new Error(await getApiError(response));
+    throw await getApiError(response);
   }
 }

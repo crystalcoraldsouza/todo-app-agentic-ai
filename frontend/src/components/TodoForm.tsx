@@ -9,8 +9,10 @@ export interface TodoFormValues {
 interface TodoFormProps {
   values: TodoFormValues;
   error: string;
+  errorField: keyof TodoFormValues | null;
   isEditing: boolean;
   isSaving: boolean;
+  isValid: boolean;
   minimumDueDateTime: string;
   onChange: (field: keyof TodoFormValues, value: string) => void;
   onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
@@ -20,8 +22,10 @@ interface TodoFormProps {
 function TodoForm({
   values,
   error,
+  errorField,
   isEditing,
   isSaving,
+  isValid,
   minimumDueDateTime,
   onChange,
   onSubmit,
@@ -42,7 +46,7 @@ function TodoForm({
             value={values.title}
             disabled={isSaving}
             onChange={(event) => onChange('title', event.target.value)}
-            aria-invalid={Boolean(error)}
+            aria-invalid={errorField === 'title'}
             aria-describedby={error ? 'form-error' : undefined}
           />
         </div>
@@ -73,6 +77,8 @@ function TodoForm({
             value={values.dueDateTime}
             disabled={isSaving}
             onChange={(event) => onChange('dueDateTime', event.target.value)}
+            aria-invalid={errorField === 'dueDateTime'}
+            aria-describedby={errorField === 'dueDateTime' ? 'form-error' : undefined}
           />
           <p className="field-hint">Shown in your local time.</p>
         </div>
@@ -80,7 +86,7 @@ function TodoForm({
         {error && <p className="form-error" id="form-error" role="alert">{error}</p>}
 
         <div className="form-actions">
-          <button className="primary-button" type="submit" disabled={isSaving}>
+          <button className="primary-button" type="submit" disabled={isSaving || !isValid || Boolean(error)}>
             {isSaving ? 'Saving…' : isEditing ? 'Save changes' : 'Add ToDo'}
           </button>
           {isEditing && (
