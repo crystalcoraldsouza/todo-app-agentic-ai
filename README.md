@@ -15,10 +15,16 @@ This is a todo application for a single user to maintain a todo list built with 
 
 The project is organised as a monorepo containing two independent applications:
 
-```js
+```text
 /
 ├── frontend/
-├── backend/
+│   ├── src/
+│   ├── index.html
+│   ├── package.json
+│   └── package-lock.json
+├── backend/ (planned)
+├── .gitignore
+├── .nvmrc
 ├── PLAN.md
 ├── AGENTS.md
 └── README.md
@@ -37,17 +43,21 @@ NVM is optional. If you use NVM, run `nvm use` from the repository root to selec
 
 ### Frontend
 
-```js
+Install dependencies from the repository root, then run the development server from `frontend/`:
+
+```sh
 cd frontend
+npm install
 npm run dev
 ```
+
+Vite serves the development app at `http://localhost:5173` by default. Node.js 24 or later is required.
+
+The frontend currently displays a basic Hello World page; ToDo management features are planned.
 
 ### Backend
 
-```js
-cd backend
-npm run dev
-```
+The backend is planned and will be documented when implemented.
 
 ## Design & Architecture
 
@@ -69,9 +79,7 @@ To be documented following implementation, including input validation, error res
 
 ### Testing
 
-Automated tests cover relevant application behaviour, validation and failure scenarios.
-
-Detailed test instructions and verification results will be documented as implementation progresses.
+Automated testing is planned but is not yet configured or implemented. Test instructions and verification results will be documented as tests are introduced.
 
 ### AI-Assisted Development
 
