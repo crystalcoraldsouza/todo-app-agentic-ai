@@ -22,7 +22,10 @@ The project is organised as a monorepo containing two independent applications:
 │   ├── index.html
 │   ├── package.json
 │   └── package-lock.json
-├── backend/ (planned)
+├── backend/
+│   ├── src/
+│   ├── package.json
+│   └── package-lock.json
 ├── .gitignore
 ├── .nvmrc
 ├── PLAN.md
@@ -57,7 +60,26 @@ The frontend currently displays a basic Hello World page; ToDo management featur
 
 ### Backend
 
-The backend is planned and will be documented when implemented.
+Install backend dependencies and start the development server from the repository root:
+
+```sh
+cd backend
+npm install
+npm run dev
+```
+
+The backend listens on port `3008` by default. Set the `PORT` environment variable to use a different port. The `GET /health` endpoint returns HTTP 200 with `{ "status": "ok" }`.
+
+Run backend checks and create a production build from `backend/`:
+
+```sh
+npm run lint
+npm run typecheck
+npm run build
+npm start
+```
+
+The production start command runs the compiled JavaScript with Node.js.
 
 ## Design & Architecture
 
@@ -67,7 +89,7 @@ To be documented following implementation.
 
 ### Backend
 
-To be documented following implementation.
+The backend is a Node.js, TypeScript and Express 5 application. It currently provides `GET /health`; ToDo endpoints and persistence are planned.
 
 ### Behaviour & Assumptions
 
@@ -79,7 +101,7 @@ To be documented following implementation, including input validation, error res
 
 ### Testing
 
-Automated testing is planned but is not yet configured or implemented. Test instructions and verification results will be documented as tests are introduced.
+Automated tests are not configured or implemented at this stage. The backend health endpoint can be checked manually at `http://localhost:3008/health` while the backend is running.
 
 ### AI-Assisted Development
 
