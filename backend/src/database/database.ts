@@ -1,9 +1,11 @@
 import { mkdirSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const databaseDirectory = fileURLToPath(new URL('../../data/', import.meta.url));
-const databasePath = fileURLToPath(new URL('../../data/todos.sqlite', import.meta.url));
+const defaultDatabasePath = fileURLToPath(new URL('../../data/todos.sqlite', import.meta.url));
+const databasePath = process.env.TODO_DATABASE_PATH ?? defaultDatabasePath;
+const databaseDirectory = dirname(databasePath);
 
 mkdirSync(databaseDirectory, { recursive: true });
 

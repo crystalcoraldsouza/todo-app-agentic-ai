@@ -4,6 +4,7 @@ node_modules/
 # Build and coverage output
 dist/
 coverage/
+backend/test-results.xml
 
 # Local SQLite data
 backend/data/

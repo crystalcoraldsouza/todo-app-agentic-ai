@@ -1,4 +1,6 @@
 import express, { type ErrorRequestHandler } from 'express';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { todoRoutes } from './routes/todoRoutes.js';
 import { TodoServiceError } from './services/todoService.js';
 
@@ -11,8 +13,7 @@ class RouteNotFoundError extends Error {
   }
 }
 
-const app = express();
-const port = Number(process.env.PORT) || 3008;
+export const app = express();
 
 app.use(express.json());
 
@@ -51,6 +52,10 @@ const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => 
 
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Backend listening on port ${port}`);
-});
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  const port = Number(process.env.PORT) || 3008;
+
+  app.listen(port, () => {
+    console.log(`Backend listening on port ${port}`);
+  });
+}
