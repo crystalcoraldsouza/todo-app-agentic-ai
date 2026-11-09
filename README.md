@@ -64,7 +64,7 @@ npm run dev
 
 Vite serves the development app at `http://localhost:5173` by default. Node.js 24 or later is required.
 
-The frontend currently displays a basic Hello World page; ToDo management features are planned.
+The frontend currently provides a ToDo interface for creating, editing, completing and deleting items. Its data is held in component state only, so it resets on reload and is not yet connected to the backend API.
 
 ### Backend
 
@@ -108,7 +108,7 @@ Create requests require a non-empty `title`; `description` and `dueDateTime` are
 
 ### Frontend
 
-The frontend is a React, TypeScript and Vite application. It currently displays a basic Hello World page and is not yet connected to the backend API.
+The frontend is a React, TypeScript and Vite application. The current UI uses component state for ToDos and has not yet been connected to the backend API. Due dates use local time, past due dates are rejected, and deletion requires confirmation.
 
 ### Backend
 
@@ -145,7 +145,7 @@ The repository includes an `AGENTS.md` file containing persistent guidelines for
 
 ## Known Limitations & Future Work
 
-- Manual ToDo reordering is not currently supported. The backend assigns ordinal positions automatically. If manual reordering is introduced, the ordering and database uniqueness strategy will need to be revisited.
+- Manual ToDo reordering is not currently supported; the backend assigns ordinal positions automatically.
 - Deletion is permanent. Soft deletion and recovery may be considered if future requirements justify them.
 - The application currently supports a single user; authentication and multi-user support are outside the initial scope.
 - Concurrent updates use a last-write-wins approach. Optimistic locking, versioning and more advanced concurrency controls are deferred unless future requirements justify them.

@@ -148,10 +148,12 @@ Keep Stage 3 proportionate to the single-user application. Use Node.js built-ins
 
 Implement the ToDo frontend using the existing React, TypeScript and Vite setup.
 
+- Build and review the UI with React component state first, then connect it to the backend API.
 - Integrate with the existing backend API using native `fetch`.
 - Implement ToDo listing, creation, editing, deletion and completion.
 - Hide completed ToDos by default, with an option to display them.
-- Handle due dates and display them in the user's local timezone.
+- Handle due dates in the user's local timezone and prevent setting a due date in the past.
+- Confirm permanent deletion before removing a ToDo.
 - Add basic frontend validation and user-friendly error feedback; backend validation remains authoritative.
 - Use semantic HTML and basic accessibility practices.
 - Apply minimal, responsive styling focused on readability and usability.
