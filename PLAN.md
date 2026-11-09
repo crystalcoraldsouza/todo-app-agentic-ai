@@ -131,9 +131,15 @@ Implement the core ToDo CRUD API in the layered backend described above. Stage 2
 
 ### Stage 3: Validation and Robustness
 
-- Implement comprehensive validation and edge-case handling.
-- Add consistent structured error responses.
-- Refine centralized error-handling middleware.
-- Add database failure handling.
-- Add automated testing.
-- Add further data integrity and boundary-condition checks.
+Keep Stage 3 proportionate to the single-user application. Use Node.js built-ins and the existing `tsx` dependency; do not add packages or backend architecture layers.
+
+- Require POST and PATCH bodies to be present JSON objects. Reject missing bodies, arrays, primitives and `null` with HTTP 400.
+- Reject unknown fields. POST accepts `title`, `description` and `dueDateTime`; PATCH also accepts `isCompleted` and must contain at least one supported field.
+- Require titles to be nonblank and validate supported field types. Validate due dates as ISO 8601 UTC date-times ending in `Z`, including calendar and time validity. Preserve Stage 2 whitespace behavior and optional-field semantics.
+- Return the first detected validation error. Do not add maximum title or description lengths, a custom request-size limit, or special unsupported-content-type handling at this stage.
+- Use one central Express error middleware and a small structured response: `{ "error": { "code": "...", "message": "..." } }`. Controllers pass errors through; services handle validation and business logic. Use Express 5 error propagation, avoid exposing internal details, and log unexpected errors.
+- Return `VALIDATION_ERROR` with HTTP 400, `TODO_NOT_FOUND` or `ROUTE_NOT_FOUND` with HTTP 404, and `INTERNAL_SERVER_ERROR` with HTTP 500. Unsupported methods use the route-not-found response; do not add 405 handling or `Allow` headers. Keep `GET /health` returning HTTP 200 while the server is running.
+- Database directory creation, opening or schema initialization failures must prevent server startup. Runtime database failures use the central HTTP 500 response. Do not add special busy/locked handling.
+- Keep the existing single-statement maximum-plus-one ordinal assignment and allow reuse after deleting the highest ordinal. Do not add a unique ordinal index. Editing, completing or reopening a ToDo must not change its ordinal; `createdAt` remains immutable and `updatedAt` refreshes on every successful PATCH, including unchanged values. Timestamps remain backend-generated UTC values. Deletion remains permanent, and updates use last-write-wins without locks, queues or versioning.
+- Add a focused API integration test suite using Node.js `node:test`, `node:assert` and existing `tsx`. Use a temporary SQLite database so tests cannot modify development data. Cover representative CRUD, validation and not-found responses, persistence, ordering, timestamps and concurrent creation. Do not add separate exhaustive boundary or rare database-failure suites.
+- Update `README.md` with the implemented error behavior and test command. Run typecheck, lint, build and the focused test suite.
