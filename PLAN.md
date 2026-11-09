@@ -154,7 +154,9 @@ Implement the ToDo frontend using the existing React, TypeScript and Vite setup.
 - Hide completed ToDos by default, with an option to display them.
 - Handle due dates in the user's local timezone and prevent setting a due date in the past.
 - Confirm permanent deletion before removing a ToDo.
-- Add basic frontend validation and user-friendly error feedback; backend validation remains authoritative.
+- Validate the title and due date as the user changes them, and disable saving while the form is invalid. Backend validation remains authoritative.
+- Refresh the list when an API operation reports that a ToDo no longer exists. Show delete failures in a browser alert.
+- Provide user-friendly error feedback.
 - Use semantic HTML and basic accessibility practices.
 - Apply minimal, responsive styling focused on readability and usability.
 - Keep the implementation simple. Do not add dependencies, state-management libraries or unnecessary architecture layers.
