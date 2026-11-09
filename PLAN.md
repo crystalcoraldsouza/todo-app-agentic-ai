@@ -143,3 +143,24 @@ Keep Stage 3 proportionate to the single-user application. Use Node.js built-ins
 - Keep the existing single-statement maximum-plus-one ordinal assignment and allow reuse after deleting the highest ordinal. Do not add a unique ordinal index. Editing, completing or reopening a ToDo must not change its ordinal; `createdAt` remains immutable and `updatedAt` refreshes on every successful PATCH, including unchanged values. Timestamps remain backend-generated UTC values. Deletion remains permanent, and updates use last-write-wins without locks, queues or versioning.
 - Add a focused API integration test suite using Node.js `node:test`, `node:assert` and existing `tsx`. Use a temporary SQLite database so tests cannot modify development data. Cover representative CRUD, validation and not-found responses, persistence, ordering, timestamps and concurrent creation. Do not add separate exhaustive boundary or rare database-failure suites.
 - Update `README.md` with the implemented error behavior and test command. Run typecheck, lint, build and the focused test suite.
+
+### Stage 4: Frontend Integration and ToDo UI
+
+Implement the ToDo frontend using the existing React, TypeScript and Vite setup.
+
+- Integrate with the existing backend API using native `fetch`.
+- Implement ToDo listing, creation, editing, deletion and completion.
+- Hide completed ToDos by default, with an option to display them.
+- Handle due dates and display them in the user's local timezone.
+- Add basic frontend validation and user-friendly error feedback; backend validation remains authoritative.
+- Use semantic HTML and basic accessibility practices.
+- Apply minimal, responsive styling focused on readability and usability.
+- Keep the implementation simple. Do not add dependencies, state-management libraries or unnecessary architecture layers.
+
+### Stage 5: Testing and Finalisation
+
+- Verify frontend and backend integration and core user flows.
+- Test validation, error handling and date/time behavior.
+- Check basic accessibility and responsive usability.
+- Run lint, typecheck and production build checks.
+- Update `README.md` to reflect the completed application.
