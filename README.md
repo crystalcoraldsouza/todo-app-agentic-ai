@@ -24,8 +24,15 @@ The project is organised as a monorepo containing two independent applications:
 │   └── package-lock.json
 ├── backend/
 │   ├── src/
+│   │   ├── controllers/
+│   │   ├── database/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── types/
+│   │   └── server.ts
 │   ├── package.json
 │   └── package-lock.json
+├── backend/data/ (local SQLite database, gitignored)
 ├── .gitignore
 ├── .nvmrc
 ├── PLAN.md
@@ -70,6 +77,8 @@ npm run dev
 
 The backend listens on port `3008` by default. Set the `PORT` environment variable to use a different port. The `GET /health` endpoint returns HTTP 200 with `{ "status": "ok" }`.
 
+The backend stores ToDos in `backend/data/todos.sqlite`, created automatically at startup. The database directory is excluded from Git.
+
 Run backend checks and create a production build from `backend/`:
 
 ```sh
@@ -81,6 +90,19 @@ npm start
 
 The production start command runs the compiled JavaScript with Node.js.
 
+### ToDo API
+
+The API is available under `/api/todos`:
+
+| Method   | Endpoint         | Behavior                                                               |
+| -------- | ---------------- | ---------------------------------------------------------------------- |
+| `GET`    | `/api/todos`     | Returns all ToDos, ordered by ordinal.                                 |
+| `POST`   | `/api/todos`     | Creates a ToDo and returns HTTP 201 with the created record.           |
+| `PATCH`  | `/api/todos/:id` | Partially updates a ToDo and returns HTTP 200 with the updated record. |
+| `DELETE` | `/api/todos/:id` | Deletes a ToDo and returns HTTP 204.                                   |
+
+Create requests require a non-empty `title`; `description` and `dueDateTime` are optional. Due dates must be ISO 8601 UTC values ending in `Z`. PATCH accepts `title`, `description`, `dueDateTime`, and `isCompleted`; omitted fields stay unchanged, and `null` clears description or due date. The backend generates IDs, ordinals, and timestamps. Invalid input and malformed UUIDs return HTTP 400; a valid UUID with no matching ToDo returns HTTP 404. The API returns both completed and incomplete records; visibility filtering is a frontend responsibility.
+
 ## Design & Architecture
 
 ### Frontend
@@ -89,7 +111,7 @@ To be documented following implementation.
 
 ### Backend
 
-The backend is a Node.js, TypeScript and Express 5 application. It currently provides `GET /health`; ToDo endpoints and persistence are planned.
+The backend uses Node.js, TypeScript, Express 5, and Node's built-in `node:sqlite` module. Routes, controllers, services, and database code are kept in separate layers. It provides the health endpoint and the ToDo CRUD API described above.
 
 ### Behaviour & Assumptions
 
@@ -101,7 +123,7 @@ To be documented following implementation, including input validation, error res
 
 ### Testing
 
-Automated tests are not configured or implemented at this stage. The backend health endpoint can be checked manually at `http://localhost:3008/health` while the backend is running.
+Automated tests are not configured or implemented. The health endpoint and ToDo API can be verified manually while the backend is running.
 
 ### AI-Assisted Development
 

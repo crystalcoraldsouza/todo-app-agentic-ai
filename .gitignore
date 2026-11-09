@@ -5,6 +5,9 @@ node_modules/
 dist/
 coverage/
 
+# Local SQLite data
+backend/data/
+
 # TypeScript build information
 *.tsbuildinfo
 
