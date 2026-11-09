@@ -107,3 +107,30 @@ Establish the foundational project structure and development environment.
 - Maintain `README.md` alongside implementation with actual installation and development commands, runtime requirements, ports, project structure and health endpoint. Distinguish planned features from implemented behaviour and document verified behaviour.
 
 Further implementation stages will be defined as requirements and design decisions are established.
+
+### Stage 2: Core ToDo Management
+
+Implement the core backend ToDo API using the existing Node.js 24+, Express 5, TypeScript and ESLint setup, with Node.js's built-in `node:sqlite` `DatabaseSync`. Do not add dependencies or automated test tooling.
+
+- Store the database at `backend/data/todos.sqlite` and exclude the directory or database file in `.gitignore`.
+- Initialize the database at startup and create the initial schema if it does not exist.
+- Implement `GET /api/todos` to return all ToDos, completed and incomplete, ordered by ordinal.
+- Implement `POST /api/todos` to create a ToDo with a backend-generated UUID, ordinal and timestamps, and a default completion status.
+- Implement `PATCH /api/todos/:id` to update supported supplied fields; reject an empty body with HTTP 400.
+- Implement `DELETE /api/todos/:id` to delete a ToDo.
+- Perform basic validation of required fields, supported data types, ISO 8601 UTC date/time values ending in `Z`, and UUID syntax. Invalid input, including malformed UUID syntax, returns HTTP 400. A valid UUID that does not identify an existing ToDo returns HTTP 404.
+- Allow optional description and due date values to be cleared with `null`; omitted fields in a PATCH request remain unchanged.
+- Use prepared SQL statements and transactions where multiple database operations must succeed together.
+- Assign new ToDos `MAX(ordinal) + 1`, starting at zero. Updates and deletions do not change remaining ordinals. If the highest ordinal is deleted, its value may be reused.
+- Return completed and incomplete records from the API; filtering and default visibility belong to the frontend.
+- Update `README.md` with the API, database location, local setup and verified Stage 2 behavior.
+- Run typecheck, lint and build checks, then manually verify CRUD behavior and basic 400/404 cases. Do not add automated tests.
+
+### Stage 3: Validation and Robustness
+
+- Implement comprehensive validation and edge-case handling.
+- Add consistent structured error responses.
+- Refine centralized error-handling middleware.
+- Add database failure handling.
+- Add automated testing.
+- Add further data integrity and boundary-condition checks.
