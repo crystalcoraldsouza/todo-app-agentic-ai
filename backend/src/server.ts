@@ -1,5 +1,15 @@
-import express from 'express';
+import express, { type ErrorRequestHandler } from 'express';
 import { todoRoutes } from './routes/todoRoutes.js';
+import { TodoServiceError } from './services/todoService.js';
+
+class RouteNotFoundError extends Error {
+  readonly statusCode = 404;
+  readonly code = 'ROUTE_NOT_FOUND';
+
+  constructor() {
+    super('Route not found');
+  }
+}
 
 const app = express();
 const port = Number(process.env.PORT) || 3008;
@@ -11,6 +21,35 @@ app.get('/health', (_request, response) => {
 });
 
 app.use('/api/todos', todoRoutes);
+
+app.use((_request, _response, next) => {
+  next(new RouteNotFoundError());
+});
+
+const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => {
+  void _next;
+
+  if (error instanceof TodoServiceError || error instanceof RouteNotFoundError) {
+    response.status(error.statusCode).json({
+      error: { code: error.code, message: error.message },
+    });
+    return;
+  }
+
+  if (error instanceof SyntaxError && 'body' in error) {
+    response.status(400).json({
+      error: { code: 'VALIDATION_ERROR', message: 'Request body contains invalid JSON' },
+    });
+    return;
+  }
+
+  console.error('Unexpected request error:', error);
+  response.status(500).json({
+    error: { code: 'INTERNAL_SERVER_ERROR', message: 'An unexpected error occurred' },
+  });
+};
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
