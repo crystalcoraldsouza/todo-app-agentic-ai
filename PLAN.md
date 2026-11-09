@@ -163,8 +163,9 @@ Implement the ToDo frontend using the existing React, TypeScript and Vite setup.
 
 ### Stage 5: Testing and Finalisation
 
-- Verify frontend and backend integration and core user flows.
-- Test validation, error handling and date/time behavior.
-- Check basic accessibility and responsive usability.
-- Run lint, typecheck and production build checks.
-- Update `README.md` to reflect the completed application.
+- Add proportionate frontend component and interaction tests using Vitest, React Testing Library, `user-event` and `jsdom`. Do not add browser automation or JUnit reporting for frontend tests.
+- Cover the main user flows, validation and error feedback: loading and displaying ToDos, completed-item visibility, create/edit/complete/delete interactions, delete confirmation, date handling, and representative API or network failures. Test observable behavior rather than implementation details; exhaustive coverage is not required.
+- Manually verify frontend/backend integration, including core CRUD flows, persistence after reload, API error feedback and date/time behavior.
+- Check basic accessibility and responsive usability, including keyboard use, associated labels, visible focus and narrow-screen layout.
+- Run frontend tests, lint, typecheck and production build checks, together with the existing backend tests, lint, typecheck and build checks. Report actual results and address failures.
+- Update `README.md` to reflect the completed application and verified setup, usage and testing commands.
