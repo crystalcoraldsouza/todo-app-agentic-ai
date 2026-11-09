@@ -30,8 +30,10 @@ The frontend and backend run independently. Each application has its own depende
 
 ### Prerequisites
 
-- Node.js (version to be confirmed)
+- Node.js 24 or later
 - npm
+
+NVM is optional. If you use NVM, run `nvm use` from the repository root to select the project's preferred Node.js version.
 
 ### Frontend
 
